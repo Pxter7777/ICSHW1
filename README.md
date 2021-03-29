@@ -3,6 +3,9 @@
 
 [Raw Socket Tutorial](https://www.opensourceforu.com/2015/03/a-guide-to-using-raw-sockets/)
 
+https://github.com/Jxter7777/ICS2021HW1
+
+
 ## 執行步驟
 1. 查Victim IPv4
     <br>`ipconfig`
@@ -62,11 +65,12 @@ linux強制使用者要有root priviledge(用sudo)才能使用raw socket
 ### Amplification 
 DNSSEC, EDNS
 ### dig
-運用dig可以直接由terminal發送dns request進行測試，意外測試到
+* 運用dig可以直接由terminal發送dns request進行測試，意外測試到
 <br>`dig ANY nctu.edu.tw @140.113.6.2`
 ![](https://i.imgur.com/DednJ7A.png)
-3083的TCP、3084的DNS其實是同一個封包，Fragment成2塊，實際總長約2500，查看他的Request，發現差別在Additional Records
+* 3083的TCP、3084的DNS其實是同一個封包，Fragment成2塊，實際總長約2500，查看他的Request，發現差別在Additional Records
 ![](https://i.imgur.com/3N1vjHs.png)
-實際照抄上去也會有同樣的效果
+* 實際照抄上去也會有同樣的效果
 ![](https://i.imgur.com/g9damJC.png)
 
+https://blog.cloudflare.com/deep-inside-a-dns-amplification-ddos-attack/
