@@ -50,7 +50,11 @@ struct additional_record{
     unsigned short udp_payload_size;
     unsigned char RCODE;
     unsigned char EDNS0_ver;
-    unsigned short Z;
+    
+    unsigned char Reserved1 :7, DO :1;
+    unsigned char Reserved2;
+    
+    
     unsigned short data_len;
     unsigned short opt_code;
     unsigned short opt_len;
@@ -153,7 +157,9 @@ int dns_send(int sock_raw, char *vic_ip, int udp_p, char *dns_ip){
     add_r->udp_payload_size = htons(4096);
     add_r->RCODE = 0x00;
     add_r->EDNS0_ver = 0;
-    add_r->Z = htons(0x0000);
+    add_r->DO = 1;
+    add_r->Reserved1 = 0;
+    add_r->Reserved2 = 0;
     add_r->data_len = htons(12);
     add_r->opt_code = htons(10);
     add_r->opt_len = htons(8);
