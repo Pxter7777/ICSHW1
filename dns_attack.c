@@ -77,9 +77,9 @@ int main(int argc, char *argv[]){
     /* DNS_ATTACK, 3 times */
     
     dns_send(sock_raw, argv[1], atoi(argv[2]), argv[3]);
-    //sleep(1);
+    sleep(1);
     dns_send(sock_raw, argv[1], atoi(argv[2]), argv[3]);
-    //sleep(1);
+    sleep(1);
     dns_send(sock_raw, argv[1], atoi(argv[2]), argv[3]);
     return 0;
 }
