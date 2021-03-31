@@ -1,7 +1,7 @@
 all: dns_attack
 
 output.txt: dns_attack
-	./dns_attack 192.168.1.104 7 8.8.8.8
+	./dns_attack 192.168.1.104 7 140.113.6.2
 
 dns_attack: dns_attack.c
 	gcc dns_attack.c -o dns_attack
